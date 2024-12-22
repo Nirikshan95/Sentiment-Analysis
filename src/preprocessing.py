@@ -43,19 +43,16 @@ class DataLoader:
         
         #prepare the data
         X=shuffled_df[3]
-        print(X)
         y=shuffled_df[2].map({'Negative':0,'Positive':1,'Neutral':2,'Irrelevant':3}).values
         
         #tokenization
-        tokenizer=Tokenizer(num_words=config.VOCABULARY_SIZE,oov_token='<oov>')
-        tokenizer.fit_on_texts(X)
+        if os.path.exists(config.TOKENIZER_PATH):
+            with open(config.TOKENIZER_PATH,'rb') as f:
+                tokenizer=pickle.load(f)
+        else:
+            tokenizer=Tokenizer(num_words=config.VOCABULARY_SIZE,oov_token='<oov>')
+            tokenizer.fit_on_texts(X)
         tokenized=tokenizer.texts_to_sequences(X)
-        import matplotlib.pyplot as plt
-        lengths = [len(seq) for seq in tokenized]
-        plt.hist(lengths, bins=50)
-        plt.show()
-
-        
         
         #save the tokenizer
         os.makedirs('./trained models',exist_ok=True)
@@ -64,9 +61,17 @@ class DataLoader:
         
         #padding
         padded_X=pad_sequences(tokenized,maxlen=config.MAX_LENGTH,padding='post')
-        scaler=MinMaxScaler()
-        scaled_X=scaler.fit_transform(padded_X)
-        return scaled_X,y
+        
+        '''if os.path.exists(config.SCALER_PATH):
+            with open(config.SCALER_PATH,'rb') as scale:
+                scaler=pickle.load(scale)
+            scaled_X=scaler.transform(padded_X)
+        else:
+            scaler=MinMaxScaler()
+            scaled_X=scaler.fit_transform(padded_X)
+            with open(config.SCALER_PATH,'wb') as scale:
+                pickle.dump(scaler,scale)'''
+        return padded_X,y
 
 def data():
     dt=DataLoader()

@@ -8,8 +8,8 @@ a,b=preprocessing.data()
 #build model
 model=Sequential([
     Embedding(config.VOCABULARY_SIZE,config.EMBEDDING_DIM,input_length=config.MAX_LENGTH),
-    LSTM(30,activation='tanh'),
-    Dropout(0.2),
+    LSTM(120,activation='tanh'),
+    Dropout(0.4),
     Dense(32,activation='relu'),
     Dense(4,activation=config.ACTIVATION)
 ]
@@ -20,7 +20,7 @@ model.compile(optimizer=config.OPTIMIZER,loss=config.LOSS,metrics=config.METRICS
 
 
 
-#train the model
+#train the mode
 history=model.fit(a,b,validation_split=config.VALIDATION_SPLIT,epochs=config.EPOCHS,batch_size=config.BATCH_SIZE)
 
 #print model summary
